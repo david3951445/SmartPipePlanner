@@ -1,0 +1,6 @@
+@SmartPipePlanner.API_HostAddress = http://localhost:5269
+
+GET {{SmartPipePlanner.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
