@@ -4,7 +4,8 @@ public record Pipe(
     Coordinate Location,
     Direction Direction,
     PipeGeometry Geometry,
-    PipeCategory Category
+    PipeCategory Category,
+    Direction? LPipeDirection = null
 );
 
 public enum Direction { PosX, NegX, PosY, NegY, PosZ, NegZ }

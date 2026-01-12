@@ -51,4 +51,18 @@ public class AStarPlannerTests
         List<Coordinate>? path = planner.PlanPath(start, goal);
         Assert.Null(path);
     }
+
+    [Fact]
+    public void PlanPath_SingleCell_ReturnsThatCell()
+    {
+        int size = 1;
+        var grid = new Grid(size, size, size);
+        var planner = new AStarPlanner(grid);
+
+        Coordinate single = new(0, 0, 0);
+
+        // Act & Assert
+        List<Coordinate>? path = planner.PlanPath(single, single);
+        Assert.Equal(path![0], single);
+    }
 }

@@ -1,6 +1,6 @@
 namespace SmartPipePlanner.Core;
 
-public record struct Coordinate(int X, int Y, int Z)
+public readonly record struct Coordinate(int X, int Y, int Z)
 {
     public static Coordinate operator +(Coordinate a, Coordinate b)
         => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);

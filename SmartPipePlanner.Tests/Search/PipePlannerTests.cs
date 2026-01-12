@@ -36,8 +36,8 @@ public class PipePlannerTests
     public void PlanPaths_SecondCollidesFirst_ReturnsFirst()
     {
         var grid = new Grid(3, 3, 1);
-        grid.SetBox(new Coordinate(1, 0, 0), new Coordinate(1, 2, 0), CellType.Obstacle);
-        grid.SetBox(new Coordinate(1, 2, 0), new Coordinate(1, 0, 0), CellType.Obstacle);
+        grid.SetBox(new Coordinate(1, 0, 0), new Coordinate(1, 0, 0), CellType.Obstacle);
+        grid.SetBox(new Coordinate(1, 2, 0), new Coordinate(1, 2, 0), CellType.Obstacle);
         var planner = new PipePlanner(grid);
 
         Coordinate[] starts = [new(0, 0, 0), new(0, 2, 0)];
@@ -58,5 +58,31 @@ public class PipePlannerTests
         Pipe[]?[] paths = planner.PlanPaths(problems);
         Assert.InRange(paths[0]!.Length, 0, starts[0].ManhattanDistance(ends[0]) + 1);
         Assert.Null(paths[1]);
+    }
+
+    [Fact]
+    public void PlanPaths_1By4By1_ReturnsLPipe_ThenPipe2_ThenPipe1()
+    {
+        var grid = new Grid(1, 4, 1);
+        var planner = new PipePlanner(grid);
+
+        Coordinate start = new(0, 0, 0);
+        Coordinate end = new(0, 3, 0);
+        Problem[] problems =
+        [
+            new Problem(start,
+                        Direction.PosX,
+                        end,
+                        PipeCategory.HotWaterPipe),
+        ];
+
+        // Act & Assert
+        Pipe[]?[] paths = planner.PlanPaths(problems);
+        var lpipe = paths[0]![0];
+        var pipe2 = paths[0]![1];
+        var pipe1 = paths[0]![2];
+        Assert.Equal(PipeGeometry.LPipe1, lpipe.Geometry);
+        Assert.Equal(PipeGeometry.Pipe2, pipe2.Geometry);
+        Assert.Equal(PipeGeometry.Pipe1, pipe1.Geometry);
     }
 }
