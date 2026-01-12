@@ -13,6 +13,14 @@ public class Grid
                     Cells[x, y, z] = CellType.Empty;
     }
 
+    public void SetBox(Coordinate start, Coordinate end, CellType type)
+    {
+        for (int x = start.X; x <= end.X; x++)
+            for (int y = start.Y; y <= end.Y; y++)
+                for (int z = start.Z; z <= end.Z; z++)
+                    Cells[x, y, z] = type;
+    }
+
     public bool CanPlace(Pipe pipe)
     {
         var loc = pipe.Location;
