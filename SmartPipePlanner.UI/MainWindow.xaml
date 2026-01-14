@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:h="http://helix-toolkit.org/wpf" 
-        xmlns:ui="clr-namespace:SmartPipePlanner.UI"
+        xmlns:ui="clr-namespace:SmartPipePlanner.UI.ViewModels"
         Title="SmartPipePlanner 3D Demo" Height="600" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,80 +16,149 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left Panel -->
-            <StackPanel x:Name="LeftPanel" Grid.Column="0" Margin="10" >
-                <StackPanel.DataContext>
-                    <ui:ElementCreateViewModel x:Name="viewModel" />
-                </StackPanel.DataContext>
+            <TabControl Grid.Column="0">
+                <TabItem Header="Creation">
+                    <!-- Creation Panel -->
+                    <StackPanel x:Name="CreationPanel" Margin="10" >
+                        <StackPanel.DataContext>
+                            <ui:ElementCreateViewModel x:Name="viewModel" />
+                        </StackPanel.DataContext>
 
-                <TextBlock Text="Category"/>
-                <ComboBox ItemsSource="{Binding ElementCategories}" SelectedItem="{Binding SelectedCategory}" />
+                        <TextBlock Text="Category"/>
+                        <ComboBox ItemsSource="{Binding ElementCategories}" SelectedItem="{Binding SelectedCategory}" />
 
-                <TextBlock Text="Geometry"/>
-                <ComboBox ItemsSource="{Binding GeometryTypes}" SelectedItem="{Binding SelectedGeometry}" />
+                        <TextBlock Text="Geometry"/>
+                        <ComboBox ItemsSource="{Binding GeometryTypes}" SelectedItem="{Binding SelectedGeometry}" />
 
-                <TextBlock Text="Location"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Width="50" Text="{Binding Location.X, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBox Width="50" Text="{Binding Location.Y, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBox Width="50" Text="{Binding Location.Z, UpdateSourceTrigger=PropertyChanged}"/>
-                </StackPanel>
-                <TextBlock Text="Orientation"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Width="50" Text="{Binding Orientation.X, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBox Width="50" Text="{Binding Orientation.Y, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBox Width="50" Text="{Binding Orientation.Z, UpdateSourceTrigger=PropertyChanged}"/>
-                </StackPanel>
+                        <TextBlock Text="Location"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="50" Text="{Binding Location.X, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Location.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Location.Z, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <TextBlock Text="Orientation"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="50" Text="{Binding Orientation.X, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Z, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
 
-                <TextBlock Text="Price"/>
-                <TextBox Text="{Binding Price}"/>
+                        <TextBlock Text="Price"/>
+                        <TextBox Text="{Binding Price}"/>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height ="*"/>
-                        <RowDefinition Height ="*"/>
-                        <RowDefinition Height ="*"/>
-                    </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0"
-                        Content="Add Element"
-                        Command="{Binding AddElementCommand}" 
-                        Margin="5"/>
-                    <Button Grid.Row="0" Grid.Column="1"
-                        Content="Remove Selected"
-                        Command="{Binding RemoveElementCommand}" 
-                        Margin="5"/>
-                    <Button Grid.Row="1" Grid.Column="0"
-                        Content="Apply to Selected"
-                        Command="{Binding ApplyToSelectedCommand}"
-                        Margin="5"/>
-                    <Button Grid.Row="2" Grid.Column="0"
-                        Content="Save to DB"
-                        Command="{Binding SaveCommand}"
-                        Margin="5"/>
-                    <Button Grid.Row="2" Grid.Column="1"
-                        Content="Load from DB"
-                        Command="{Binding LoadCommand}"
-                        Margin="5"/>
-                </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height ="*"/>
+                                <RowDefinition Height ="*"/>
+                                <RowDefinition Height ="*"/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Grid.Column="0"
+                                Content="Add Element"
+                                Command="{Binding AddElementCommand}" 
+                                Margin="5"/>
+                            <Button Grid.Row="0" Grid.Column="1"
+                                Content="Remove Selected"
+                                Command="{Binding RemoveElementCommand}" 
+                                Margin="5"/>
+                            <Button Grid.Row="1" Grid.Column="0"
+                                Content="Apply to Selected"
+                                Command="{Binding ApplyToSelectedCommand}"
+                                Margin="5"/>
+                            <Button Grid.Row="2" Grid.Column="0"
+                                Content="Save to DB"
+                                Command="{Binding SaveCommand}"
+                                Margin="5"/>
+                            <Button Grid.Row="2" Grid.Column="1"
+                                Content="Load from DB"
+                                Command="{Binding LoadCommand}"
+                                Margin="5"/>
+                        </Grid>
 
-                <Separator Margin="0,10"/>
+                        <Separator Margin="0,10"/>
 
-                <ListView ItemsSource="{Binding Elements}" SelectedItem="{Binding SelectedElement}" Height="200">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Category" Width="100" DisplayMemberBinding="{Binding Category}" />
-                            <GridViewColumn Header="Geometry" Width="80" DisplayMemberBinding="{Binding Geometry.Type}" />
-                            <GridViewColumn Header="Location" Width="100" DisplayMemberBinding="{Binding Location}" />
-                            <GridViewColumn Header="Orientation" Width="100" DisplayMemberBinding="{Binding Geometry.Orientation}" />
-                            <GridViewColumn Header="Price" Width="50" DisplayMemberBinding="{Binding Price}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                        <ListView ItemsSource="{Binding Elements}" SelectedItem="{Binding SelectedElement}" Height="200">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Category" Width="100" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Geometry" Width="80" DisplayMemberBinding="{Binding Geometry.Type}" />
+                                    <GridViewColumn Header="Location" Width="100" DisplayMemberBinding="{Binding Location}" />
+                                    <GridViewColumn Header="Orientation" Width="100" DisplayMemberBinding="{Binding Geometry.Orientation}" />
+                                    <GridViewColumn Header="Price" Width="50" DisplayMemberBinding="{Binding Price}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
 
-            </StackPanel>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="Planning">
+                    <!-- Planning Panel -->
+                    <StackPanel x:Name="PlanningPanel" Margin="10" >
+                        <StackPanel.DataContext>
+                            <ui:PlanningViewModel x:Name="planningViewModel" />
+                        </StackPanel.DataContext>
+
+                        <TextBlock Text="Start"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="50" Text="{Binding Start.X, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Start.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Start.Z, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Start Direction"/>
+                        <ComboBox ItemsSource="{Binding Directions}" SelectedItem="{Binding StartDir}" />
+
+                        <TextBlock Text="End"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="50" Text="{Binding End.X, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding End.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding End.Z, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Pipe Category"/>
+                        <ComboBox ItemsSource="{Binding PipeCategories}" SelectedItem="{Binding Category}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height ="*"/>
+                                <RowDefinition Height ="*"/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Grid.Column="0"
+                                Content="Add"
+                                Command="{Binding AddCommand}" 
+                                Margin="5"/>
+                            <Button Grid.Row="0" Grid.Column="1"
+                                Content="Remove Selected"
+                                Command="{Binding RemoveCommand}" 
+                                Margin="5"/>
+                            <Button Grid.Row="1" Grid.Column="0"
+                                Content="Apply to Selected"
+                                Command="{Binding ApplyCommand}"
+                                Margin="5"/>
+                        </Grid>
+
+                        <Separator Margin="0,10"/>
+
+                        <ListView ItemsSource="{Binding Problems}" SelectedItem="{Binding SelectedProblem}" Height="200">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Start" Width="60" DisplayMemberBinding="{Binding Start}" />
+                                    <GridViewColumn Header="Start Direction" Width="100" DisplayMemberBinding="{Binding StartDir}" />
+                                    <GridViewColumn Header="End" Width="60" DisplayMemberBinding="{Binding End}" />
+                                    <GridViewColumn Header="Pipe Category" Width="100" DisplayMemberBinding="{Binding Category}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
 
             <!-- Right Panel -->
             <Border Grid.Column="1">

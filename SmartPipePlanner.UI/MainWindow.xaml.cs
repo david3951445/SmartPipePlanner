@@ -1,5 +1,4 @@
-﻿using HelixToolkit.Geometry;
-using HelixToolkit.Wpf;
+﻿using SmartPipePlanner.Core.Search;
 using SmartPipePlanner.Data;
 using System.Collections.Specialized;
 using System.Numerics;
@@ -12,22 +11,11 @@ namespace SmartPipePlanner.UI
     public partial class MainWindow : Window
     {
         readonly Dictionary<Element, ModelVisual3D> _elementVisualMap = [];
+        readonly Dictionary<Problem, (ModelVisual3D Start, ModelVisual3D End)> _problemVisualMap = [];
 
         public MainWindow()
         {
             InitializeComponent();
-
-            Point3D[] pathPoints =
-            [
-                new Point3D(-3, 0, 0),
-                new Point3D(-1, 1, 0.5),
-                new Point3D(0, 2, 1),
-                new Point3D(1, 1, 1.5),
-                new Point3D(3, 0, 2)
-            ];
-            DrawPath(pathPoints, Colors.Blue);
-            AddSphere(pathPoints[0], 0.2, Colors.Green);
-            AddSphere(pathPoints[^1], 0.2, Colors.Red);
 
             viewModel.Elements.CollectionChanged += (s, e) =>
             {
@@ -47,6 +35,23 @@ namespace SmartPipePlanner.UI
                 }
             };
             viewModel.LoadElements();
+            planningViewModel.Problems.CollectionChanged += (s, e) =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    foreach (Problem pb in e.NewItems!)
+                        AddProblemToViewport(pb);
+                }
+                else if (e.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    foreach (Problem pb in e.OldItems!)
+                        RemoveProblemFromViewport(pb);
+                }
+                else if (e.Action == NotifyCollectionChangedAction.Reset)
+                {
+                    ClearViewportProblems();
+                }
+            };
         }
 
         void AddElementToViewport(Element element)
@@ -56,7 +61,7 @@ namespace SmartPipePlanner.UI
             _elementVisualMap[element] = visual;
         }
 
-        private static ModelVisual3D GetVisual3D(Element element)
+        static ModelVisual3D GetVisual3D(Element element)
         {
             Color color = GetColor(element);
             Vector3 center = element.Location;
@@ -111,8 +116,6 @@ namespace SmartPipePlanner.UI
 
             viewport.Children.Remove(visual);
             _elementVisualMap.Remove(element);
-
-            //element.PropertyChanged -= Element_PropertyChanged;
         }
 
         void ClearViewportElements()
@@ -124,52 +127,35 @@ namespace SmartPipePlanner.UI
             _elementVisualMap.Clear();
         }
 
-        /// <summary>
-        /// Draws a 3D polyline through the points
-        /// </summary>
-        void DrawPath(Point3D[] points, Color color)
+        void AddProblemToViewport(Problem item)
         {
-            var lines = new LinesVisual3D
-            {
-                Color = color,
-                Thickness = 2
-            };
+            var start = MeshFactory.AddSphere(new Point3D(item.Start.X, item.Start.Y, item.Start.Z), 0.2, Colors.LightGreen);
+            var end = MeshFactory.AddSphere(new Point3D(item.End.X, item.End.Y, item.End.Z), 0.2, Colors.DarkGreen);
+            viewport.Children.Add(start);
+            viewport.Children.Add(end);
+            _problemVisualMap[item] = (start, end);
+        }
 
-            for (int i = 0; i < points.Length - 1; i++)
+        void RemoveProblemFromViewport(Problem item)
+        {
+            if (!_problemVisualMap.TryGetValue(item, out var x))
+                return;
+
+            viewport.Children.Remove(x.Start);
+            viewport.Children.Remove(x.End);
+            _problemVisualMap.Remove(item);
+        }
+
+        void ClearViewportProblems()
+        {
+            // 只刪除元素，不刪 Grid
+            foreach (var (Start, End) in _problemVisualMap.Values)
             {
-                lines.Points.Add(points[i]);
-                lines.Points.Add(points[i + 1]);
+                viewport.Children.Remove(Start);
+                viewport.Children.Remove(End);
             }
 
-            viewport.Children.Add(lines);
-        }
-
-        /// <summary>
-        /// Adds a sphere marker at the specified position
-        /// </summary>
-        void AddSphere(Point3D center, double radius, Color color)
-        {
-            var meshBuilder = new MeshBuilder();
-            meshBuilder.AddSphere(center.ToVector3(), (float)radius);
-            var visual = AddMesh(meshBuilder, color);
-            viewport.Children.Add(visual);
-        }
-
-        static ModelVisual3D AddMesh(MeshBuilder builder, Color color)
-        {
-            var mesh = builder.ToMesh();
-
-            var model = new GeometryModel3D
-            {
-                Geometry = mesh.ToWndMeshGeometry3D(),
-                Material = new DiffuseMaterial(new SolidColorBrush(color)),
-                BackMaterial = new DiffuseMaterial(new SolidColorBrush(color))
-            };
-
-            return new ModelVisual3D
-            {
-                Content = model
-            };
+            _problemVisualMap.Clear();
         }
     }
 }

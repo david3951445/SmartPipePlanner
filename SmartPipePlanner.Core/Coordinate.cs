@@ -36,4 +36,5 @@ public readonly record struct Coordinate(int X, int Y, int Z)
 
         throw new InvalidOperationException();
     }
+    public override string ToString() => $"({X}, {Y}, {Z})";
 }

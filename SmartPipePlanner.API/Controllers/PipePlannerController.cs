@@ -3,7 +3,7 @@ using SmartPipePlanner.API.Contracts;
 using SmartPipePlanner.Core;
 using SmartPipePlanner.Core.Search;
 
-namespace SmartPipePlanner.API;
+namespace SmartPipePlanner.API.Controllers;
 
 [ApiController]
 [Route("api/pipe-planner")]

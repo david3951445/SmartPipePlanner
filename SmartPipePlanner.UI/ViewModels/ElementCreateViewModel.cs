@@ -1,16 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using HelixToolkit.Maths;
 using Microsoft.EntityFrameworkCore;
 using SmartPipePlanner.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Windows.Automation.Provider;
 using System.Windows.Input;
 
-namespace SmartPipePlanner.UI;
+namespace SmartPipePlanner.UI.ViewModels;
 
 class ElementCreateViewModel : INotifyPropertyChanged
 {
@@ -18,7 +14,7 @@ class ElementCreateViewModel : INotifyPropertyChanged
     ElementCategory _selectedCategory;
     GeometryType _selectedGeometry;
     double _price;
-    private Element? _selectedElement;
+    Element? _selectedElement;
 
     public Array ElementCategories { get; } = Enum.GetValues<ElementCategory>();
     public Array GeometryTypes { get; } = Enum.GetValues<GeometryType>();

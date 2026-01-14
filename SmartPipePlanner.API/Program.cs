@@ -2,9 +2,8 @@ using SmartPipePlanner.Core.Search;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controller API
 builder.Services.AddControllers();
-// OpenAPI / Swagger
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Core planner (DI)
@@ -14,8 +13,6 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-
     app.UseSwagger();
     // 把 Swagger UI 掛在 root (/)
     app.UseSwaggerUI(c =>
@@ -26,7 +23,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// Map controllers
 app.MapControllers();
 
 app.Run();
