@@ -22,28 +22,27 @@ public class PipePlannerController : ControllerBase
         if (request.Problems.Length == 0)
             return BadRequest("No problems provided.");
 
-        var domainProblems = request.Problems.ToArray();
+        Problem[] domainProblems = [.. request.Problems];
 
         var grid = new Grid(request.Size.X, request.Size.Y, request.Size.Z);
-        var results = _planner.PlanPaths(grid, domainProblems);
+        Pipe[]?[] results = _planner.PlanPaths(grid, domainProblems);
 
         if (results == null)
         {
             return Ok(new PlanPathsResponse
             {
-                Results = domainProblems
+                Results = [.. domainProblems
                     .Select(_ => new PathResultDto
                     {
                         Success = false,
                         Error = "Planning failed."
-                    })
-                    .ToArray()
+                    })]
             });
         }
 
         return Ok(new PlanPathsResponse
         {
-            Results = results.Select(pipes =>
+            Results = [.. results.Select(pipes =>
                 pipes == null
                     ? new PathResultDto
                     {
@@ -55,7 +54,7 @@ public class PipePlannerController : ControllerBase
                         Success = true,
                         Pipes = pipes.ToArray()
                     }
-            ).ToArray()
+            )]
         });
     }
 }

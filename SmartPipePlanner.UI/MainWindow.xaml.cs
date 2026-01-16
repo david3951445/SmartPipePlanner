@@ -1,4 +1,5 @@
-﻿using SmartPipePlanner.Core.Search;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartPipePlanner.Core.Search;
 using SmartPipePlanner.Data;
 using System.Collections.Specialized;
 using System.Numerics;
@@ -16,7 +17,8 @@ namespace SmartPipePlanner.UI
         public MainWindow()
         {
             InitializeComponent();
-
+            loadMenuItem.Click += async (s, e) => await LoadAsync();
+            saveMenuItem.Click += async (s, e) => await SaveAsync();
             viewModel.Elements.CollectionChanged += (s, e) =>
             {
                 if (e.Action == NotifyCollectionChangedAction.Add)
@@ -34,7 +36,7 @@ namespace SmartPipePlanner.UI
                     ClearViewportElements();
                 }
             };
-            viewModel.LoadElements();
+            _ = LoadAsync();
             planningViewModel.Problems.CollectionChanged += (s, e) =>
             {
                 if (e.Action == NotifyCollectionChangedAction.Add)
@@ -52,6 +54,28 @@ namespace SmartPipePlanner.UI
                     ClearViewportProblems();
                 }
             };
+        }
+
+        async Task LoadAsync()
+        {
+            using var db = new PlanningDbContext();
+
+            var elements = await db.Elements.ToArrayAsync();
+            var problems = await db.Problems.ToArrayAsync();
+            viewModel.ResetElements(elements);
+            planningViewModel.ResetProblems([.. problems.Select(p => p.ToProblem())]);
+        }
+
+        public async Task SaveAsync()
+        {
+            await using var db = new PlanningDbContext();
+
+            db.Elements.RemoveRange(db.Elements);
+            db.Problems.RemoveRange(db.Problems);
+            db.Elements.AddRange(viewModel.Elements);
+            db.Problems.AddRange(planningViewModel.Problems.Select(ProblemDto.FromProblem));
+
+            await db.SaveChangesAsync();
         }
 
         void AddElementToViewport(Element element)

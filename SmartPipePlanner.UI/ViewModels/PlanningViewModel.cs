@@ -109,4 +109,13 @@ class PlanningViewModel : INotifyPropertyChanged
     }
 
     void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    public void ResetProblems(Problem[] problems)
+    {
+        Problems.Clear();
+        foreach (var e in problems)
+            Problems.Add(e);
+
+        SelectedProblem = Problems.FirstOrDefault();
+    }
 }

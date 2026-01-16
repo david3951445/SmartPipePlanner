@@ -1,11 +1,13 @@
 using System.Numerics;
 using Microsoft.EntityFrameworkCore;
+using SmartPipePlanner.Core;
 
 namespace SmartPipePlanner.Data;
 
 public class PlanningDbContext : DbContext
 {
     public DbSet<Element> Elements { get; set; }
+    public DbSet<ProblemDto> Problems { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -14,11 +16,11 @@ public class PlanningDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Element 設定
         modelBuilder.Entity<Element>()
             .Property(e => e.Category)
             .HasConversion<string>();
 
-        // GeometryType 轉 string
         modelBuilder.Entity<Element>()
             .OwnsOne(e => e.Geometry, g =>
             {
@@ -29,12 +31,32 @@ public class PlanningDbContext : DbContext
                     s => Vector3FromString(s));
             });
 
-        // Vector3 轉換成 string 存 SQLite
         modelBuilder.Entity<Element>()
             .Property(e => e.Location)
             .HasConversion(
                 v => $"{v.X},{v.Y},{v.Z}",
                 s => Vector3FromString(s));
+
+        // ProblemDto 設定
+        modelBuilder.Entity<ProblemDto>()
+            .Property(p => p.Category)
+            .HasConversion<string>();  // PipeCategory → string
+
+        modelBuilder.Entity<ProblemDto>()
+            .Property(p => p.Start)
+            .HasConversion(
+                v => $"{v.X},{v.Y},{v.Z}",
+                s => CoordinateFromString(s));
+
+        modelBuilder.Entity<ProblemDto>()
+            .Property(p => p.End)
+            .HasConversion(
+                v => $"{v.X},{v.Y},{v.Z}",
+                s => CoordinateFromString(s));
+
+        modelBuilder.Entity<ProblemDto>()
+            .Property(p => p.StartDir)
+            .HasConversion<string>(); // Direction → string
     }
 
     static Vector3 Vector3FromString(string s)
@@ -46,5 +68,14 @@ public class PlanningDbContext : DbContext
             float.Parse(parts[2])
         );
     }
-}
 
+    static Coordinate CoordinateFromString(string s)
+    {
+        var parts = s.Split(',');
+        return new Coordinate(
+            int.Parse(parts[0]),
+            int.Parse(parts[1]),
+            int.Parse(parts[2])
+        );
+    }
+}

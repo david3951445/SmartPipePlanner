@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using Microsoft.EntityFrameworkCore;
 using SmartPipePlanner.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -68,16 +67,12 @@ class ElementCreateViewModel : INotifyPropertyChanged
     public ICommand AddElementCommand { get; }
     public ICommand RemoveElementCommand { get; }
     public ICommand ApplyToSelectedCommand { get; }
-    public ICommand SaveCommand { get; }
-    public ICommand LoadCommand { get; }
 
     public ElementCreateViewModel()
     {
         AddElementCommand = new RelayCommand(AddElement);
         RemoveElementCommand = new RelayCommand(RemoveSelectedElement);
         ApplyToSelectedCommand = new RelayCommand(ApplyToSelected);
-        SaveCommand = new RelayCommand(SaveElements);
-        LoadCommand = new RelayCommand(LoadElements);
     }
 
     void AddElement()
@@ -128,45 +123,8 @@ class ElementCreateViewModel : INotifyPropertyChanged
         AddElement();
     }
 
-    async void SaveElements()
+    public void ResetElements(Element[] elements)
     {
-        using var db = new PlanningDbContext();
-
-        // 先取得 DB 所有元素
-        var dbElements = db.Elements.ToList();
-
-        // 1️ 刪除已被移除的元素
-        var toRemove = dbElements.Where(dbEl => Elements.All(el => el.Id != dbEl.Id)).ToList();
-        if (toRemove.Any())
-            db.Elements.RemoveRange(toRemove);
-
-        // 2️ 新增或更新
-        foreach (var element in Elements)
-        {
-            var existing = db.Elements.Find(element.Id);
-            if (existing != null)
-            {
-                // 更新屬性
-                existing.Category = element.Category;
-                existing.Geometry = element.Geometry;
-                existing.Location = element.Location;
-                existing.Price = element.Price;
-            }
-            else
-            {
-                db.Elements.Add(element);
-            }
-        }
-
-        await db.SaveChangesAsync();
-    }
-
-    public async void LoadElements()
-    {
-        using var db = new PlanningDbContext();
-        db.Database.EnsureCreated();
-        var elements = await db.Elements.ToListAsync();
-
         Elements.Clear();
         foreach (var e in elements)
             Elements.Add(e);

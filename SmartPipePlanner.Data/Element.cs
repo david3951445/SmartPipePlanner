@@ -1,4 +1,6 @@
 ﻿using System.Numerics;
+using SmartPipePlanner.Core;
+using SmartPipePlanner.Core.Search;
 
 namespace SmartPipePlanner.Data;
 
@@ -9,6 +11,24 @@ public class Element
     public required Geometry Geometry { get; set; }
     public Vector3 Location { get; set; }
     public double Price { get; set; }
+}
+
+public class ProblemDto
+{
+    public int Id { get; set; }
+    public Coordinate Start { get; set; }
+    public Direction StartDir { get; set; }
+    public Coordinate End { get; set; }
+    public PipeCategory Category { get; set; }
+
+    public Problem ToProblem() => new(Start, StartDir, End, Category);
+    public static ProblemDto FromProblem(Problem value) => new()
+    {
+        Start = value.Start,
+        StartDir = value.StartDir,
+        End = value.End,
+        Category = value.Category
+    };
 }
 
 public enum ElementCategory
