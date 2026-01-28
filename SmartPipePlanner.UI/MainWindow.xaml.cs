@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartPipePlanner.Core.Search;
 using SmartPipePlanner.Data;
+using SmartPipePlanner.UI.ViewModels;
 using System.Collections.Specialized;
 using System.Numerics;
 using System.Windows;
@@ -13,6 +14,7 @@ namespace SmartPipePlanner.UI
     {
         readonly Dictionary<Element, ModelVisual3D> _elementVisualMap = [];
         readonly Dictionary<Problem, (ModelVisual3D Start, ModelVisual3D End)> _problemVisualMap = [];
+        readonly PlanningViewModel planningViewModel;
 
         public MainWindow()
         {
@@ -37,6 +39,8 @@ namespace SmartPipePlanner.UI
                 }
             };
             _ = LoadAsync();
+            planningViewModel = new PlanningViewModel(viewModel);
+            planningPanel.DataContext = planningViewModel;
             planningViewModel.Problems.CollectionChanged += (s, e) =>
             {
                 if (e.Action == NotifyCollectionChangedAction.Add)

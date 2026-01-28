@@ -15,6 +15,7 @@ class PlanningViewModel : INotifyPropertyChanged
     Direction _startDir;
     PipeCategory _category;
     Problem? _selectedProblem;
+    readonly IGridManager _gridManager;
 
     public Array Directions { get; } = Enum.GetValues<Direction>();
     public Array PipeCategories { get; } = Enum.GetValues<PipeCategory>();
@@ -58,12 +59,15 @@ class PlanningViewModel : INotifyPropertyChanged
     public ICommand AddCommand { get; }
     public ICommand RemoveCommand { get; }
     public ICommand ApplyCommand { get; }
+    public ICommand PlanCommand { get; }
 
-    public PlanningViewModel()
+    public PlanningViewModel(IGridManager gridManager)
     {
+        _gridManager = gridManager;
         AddCommand = new RelayCommand(AddProblem);
         RemoveCommand = new RelayCommand(RemoveSelectedProblem);
         ApplyCommand = new RelayCommand(ApplyToSelected);
+        PlanCommand = new RelayCommand(Plan);
     }
 
     void AddProblem()
@@ -108,6 +112,15 @@ class PlanningViewModel : INotifyPropertyChanged
         AddProblem();
     }
 
+    void Plan()
+    {
+        var planner = new PipePlanner();
+        var grid = _gridManager.GetGrid();
+        var problems = Problems.ToArray();
+        var results = planner.PlanPaths(grid, problems);
+        _gridManager.SetPipes(results.Where(x => x != null).SelectMany(x => x!).ToArray());
+    }
+    
     void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     public void ResetProblems(Problem[] problems)
