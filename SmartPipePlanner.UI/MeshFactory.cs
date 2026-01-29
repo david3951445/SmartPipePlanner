@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.Geometry;
 using HelixToolkit.Wpf;
+using SmartPipePlanner.Core;
 using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -28,7 +29,7 @@ public static class MeshFactory
     {
         var meshBuilder = new MeshBuilder();
 
-        var q = GetQuaternion(orientation);
+        var q = orientation.ToQuaternion();
         var direction = Vector3.Transform(Vector3.UnitX, q); // 預設沿 X 軸
         start -= direction / 2;
         var end = start + direction * length;
@@ -42,7 +43,7 @@ public static class MeshFactory
         var meshBuilder = new MeshBuilder();
 
         // orientation 控制整個 L-Pipe 的旋轉
-        var q = GetQuaternion(orientation);
+        var q = orientation.ToQuaternion();
 
         // 預設 L-Pipe：第一段沿 X，第二段沿 Y
         var firstDir = Vector3.Transform(Vector3.UnitX, q);
@@ -55,16 +56,6 @@ public static class MeshFactory
         meshBuilder.AddCylinder(start, end2, 0.2f, 16);   // 第二段
 
         return AddMesh(meshBuilder, color);
-    }
-
-    static System.Numerics.Quaternion GetQuaternion(Vector3 orientation)
-    {
-        // orientation.X = Pitch, Y = Yaw, Z = Roll
-        return System.Numerics.Quaternion.CreateFromYawPitchRoll(
-            MathF.PI / 180 * orientation.Y, // Yaw
-            MathF.PI / 180 * orientation.X, // Pitch
-            MathF.PI / 180 * orientation.Z  // Roll
-        );
     }
 
     // 將 MeshBuilder 轉成 ModelVisual3D

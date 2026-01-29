@@ -118,6 +118,22 @@ class PlanningViewModel : INotifyPropertyChanged
         var grid = _gridManager.GetGrid();
         var problems = Problems.ToArray();
         var results = planner.PlanPaths(grid, problems);
+
+        for (int i = 0; i < results.Length; i++)
+        {
+            Pipe[]? pipes = results[i];
+            Console.WriteLine($"path {i}:");
+            if (pipes == null)
+            {
+                Console.WriteLine("  no path found");
+                continue;
+            }
+            foreach (var pipe in pipes)
+            {
+                Console.WriteLine($"  {pipe}");
+            }
+        }
+        
         _gridManager.SetPipes(results.Where(x => x != null).SelectMany(x => x!).ToArray());
     }
     

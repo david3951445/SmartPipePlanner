@@ -179,18 +179,30 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
 
         static Vector3 OrientationFromDirection(Direction d, Direction? ld)
         {
-            var x = new Vector3(1, 0, 0);
-            var c1 = Coordinate.FromDirection(d);
-            var x_prime = new Vector3(c1.X, c1.Y, c1.Z);
-            var raw = x.AngleBetweenDegrees(x_prime);
-            if (ld == null)
-                return new(raw, 0, 0);
+            var x1 = Vector3.UnitX;
+            var y1 = Vector3.UnitY;
+            var z1 = Vector3.UnitZ;
 
-            var y = new Vector3(0, 1, 0);
-            var c2 = Coordinate.FromDirection(ld.Value);
-            var y_prime = new Vector3(c2.X, c2.Y, c2.Z);
-            var pitch = y.AngleBetweenDegrees(y_prime);
-            return new(raw, pitch, 0);
+            var c1 = Coordinate.FromDirection(d);
+            var x2 = new Vector3(c1.X, c1.Y, c1.Z);
+
+            Vector3 y2;
+            if (ld == null)
+            {
+                y2 = Vector3.Cross(z1, x2); // 任意選一個垂直方向
+            }
+            else
+            {
+                var c2 = Coordinate.FromDirection(ld.Value);
+                y2 = new Vector3(c2.X, c2.Y, c2.Z);
+            }
+
+            var z2 = Vector3.Cross(x2, y2);
+
+            var q = Extensions.QuaternionBetweenFrames(
+                x1, y1, z1,
+                x2, y2, z2);
+            return q.ToEulerAngles();
         }
     }
 
