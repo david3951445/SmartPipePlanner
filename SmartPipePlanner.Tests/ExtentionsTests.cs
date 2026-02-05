@@ -13,17 +13,13 @@ public class ExtensionsTests
     [InlineData(30f, 60f, 90f)]
     [InlineData(-45f, -90f, 120f)] // this fail
     [InlineData(90f, 180f, -90f)]
-    public static void ToQuaternionAndBack_RoundTrip(float x, float y, float z)
+    public void ToQuaternionAndBack_RoundTrip(float x, float y, float z)
     {
         // Euler angles in degrees
         Vector3 euler = new(x, y, z);
 
         Quaternion q1 = euler.ToQuaternion();
-        Quaternion q2 = euler.ToQuaternion().ToEulerAngles().ToQuaternion();
-
-        // Normalize (optional)
-        q1 = Quaternion.Normalize(q1);
-        q2 = Quaternion.Normalize(q2);
+        Quaternion q2 = q1.ToEulerAngles().ToQuaternion();
 
         // They are equivalent if dot ≈ 1 or -1
         float dot = Quaternion.Dot(q1, q2);
@@ -31,7 +27,7 @@ public class ExtensionsTests
     }
 
     [Fact]
-    public static void IdentityQuaternion_ReturnsZeroEuler()
+    public void IdentityQuaternion_ReturnsZeroEuler()
     {
         Quaternion q = Quaternion.Identity;
         Vector3 euler = q.ToEulerAngles();

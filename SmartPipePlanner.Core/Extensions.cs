@@ -14,9 +14,9 @@ public static class Extensions
     public static Quaternion ToQuaternion(this Vector3 euler)
     {
         // Convert degrees to radians
-        float roll = euler.X * MathF.PI / 180f;
-        float pitch = euler.Y * MathF.PI / 180f;
         float yaw = euler.Z * MathF.PI / 180f;
+        float pitch = euler.Y * MathF.PI / 180f;
+        float roll = euler.X * MathF.PI / 180f;
 
         float cy = MathF.Cos(yaw * 0.5f);
         float sy = MathF.Sin(yaw * 0.5f);
@@ -42,9 +42,9 @@ public static class Extensions
         float roll = MathF.Atan2(sinr_cosp, cosr_cosp);
 
         // Pitch (Y-axis rotation)
-        float sinp = 2 * (q.W * q.Y - q.Z * q.X);
-        sinp = sinp.Clamp(-1f, 1f); // clamp for numeric stability
-        float pitch = MathF.Asin(sinp);
+        float sinp = MathF.Sqrt(1 + 2 * (q.W * q.Y - q.X * q.Z));
+        float cosr = MathF.Sqrt(1 - 2 * (q.W * q.Y - q.X * q.Z));
+        float pitch = 2 * MathF.Atan2(sinp, cosr) - MathF.PI / 2;
 
         // Yaw (Z-axis rotation)
         float siny_cosp = 2 * (q.W * q.Z + q.X * q.Y);
@@ -82,5 +82,53 @@ public static class Extensions
 
         // Convert to quaternion
         return Quaternion.CreateFromRotationMatrix(R);
+    }
+}
+
+public static class PipeExtensions
+{
+    public static Direction Inverse(this Direction d) => d switch
+    {
+        Direction.PosX => Direction.NegX,
+        Direction.NegX => Direction.PosX,
+        Direction.PosY => Direction.NegY,
+        Direction.NegY => Direction.PosY,
+        Direction.PosZ => Direction.NegZ,
+        Direction.NegZ => Direction.PosZ,
+        _ => throw new InvalidOperationException()
+    };
+
+    public static Vector3 GetOrientation(this Pipe pipe)
+    {
+        var d = pipe.Direction;
+        var ld = pipe.LPipeDirection;
+
+        var x1 = Vector3.UnitX;
+        var y1 = Vector3.UnitY;
+        var z1 = Vector3.UnitZ;
+
+        var c1 = Coordinate.FromDirection(d);
+        var x2 = new Vector3(c1.X, c1.Y, c1.Z);
+
+        Vector3 y2;
+        if (ld == null)
+        {
+            // pick a vector that is vertical to x2
+            y2 = Vector3.UnitY;
+            if (Vector3.Dot(x2, y2) > 0.99f)
+                y2 = Vector3.UnitZ;
+        }
+        else
+        {
+            var c2 = Coordinate.FromDirection(ld.Value);
+            y2 = new Vector3(c2.X, c2.Y, c2.Z);
+        }
+
+        var z2 = Vector3.Cross(x2, y2);
+
+        var q = Extensions.QuaternionBetweenFrames(
+            x1, y1, z1,
+            x2, y2, z2);
+        return q.ToEulerAngles();
     }
 }

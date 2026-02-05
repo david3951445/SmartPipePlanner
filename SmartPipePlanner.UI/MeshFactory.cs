@@ -54,7 +54,7 @@ public static class MeshFactory
 
         meshBuilder.AddCylinder(start, end1, 0.2f, 16); // 第一段
         meshBuilder.AddCylinder(start, end2, 0.2f, 16);   // 第二段
-
+        meshBuilder.AddSphere(start, 0.1f); // 連接處
         return AddMesh(meshBuilder, color);
     }
 

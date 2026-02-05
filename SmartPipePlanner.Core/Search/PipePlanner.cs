@@ -47,7 +47,7 @@ public class PipePlanner()
                     // lpipe
                     if (currentDir != nextDir)
                     {
-                        var lpipe = new Pipe(current, currentDir, PipeGeometry.LPipe1, pb.Category, nextDir);
+                        var lpipe = new Pipe(current, currentDir.Inverse(), PipeGeometry.LPipe1, pb.Category, nextDir);
                         pipes.Add(lpipe);
                         grid.Place(lpipe);
                         j++;

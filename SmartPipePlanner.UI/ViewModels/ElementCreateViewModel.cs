@@ -168,7 +168,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
                     PipeGeometry.LPipe1 => GeometryType.LPipe1,
                     _ => throw new InvalidOperationException(),
                 },
-                Orientation = OrientationFromDirection(pipe.Direction, pipe.LPipeDirection)
+                Orientation = pipe.GetOrientation()
             },
             Location = new Vector3(pipe.Location.X, pipe.Location.Y, pipe.Location.Z),
             Price = 0 // Price can be set accordingly
@@ -176,34 +176,6 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
 
         foreach (var e in pipeElements)
             Elements.Add(e);
-
-        static Vector3 OrientationFromDirection(Direction d, Direction? ld)
-        {
-            var x1 = Vector3.UnitX;
-            var y1 = Vector3.UnitY;
-            var z1 = Vector3.UnitZ;
-
-            var c1 = Coordinate.FromDirection(d);
-            var x2 = new Vector3(c1.X, c1.Y, c1.Z);
-
-            Vector3 y2;
-            if (ld == null)
-            {
-                y2 = Vector3.Cross(z1, x2); // 任意選一個垂直方向
-            }
-            else
-            {
-                var c2 = Coordinate.FromDirection(ld.Value);
-                y2 = new Vector3(c2.X, c2.Y, c2.Z);
-            }
-
-            var z2 = Vector3.Cross(x2, y2);
-
-            var q = Extensions.QuaternionBetweenFrames(
-                x1, y1, z1,
-                x2, y2, z2);
-            return q.ToEulerAngles();
-        }
     }
 
     void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
