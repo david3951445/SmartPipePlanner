@@ -5,38 +5,6 @@ namespace SmartPipePlanner.Tests;
 
 public class ExtensionsTests
 {
-    [Theory]
-    [InlineData(0f, 0f, 0f)]
-    [InlineData(45f, 0f, 0f)]
-    [InlineData(0f, 90f, 0f)]
-    [InlineData(0f, 0f, 180f)]
-    [InlineData(30f, 60f, 90f)]
-    [InlineData(-45f, -90f, 120f)] // this fail
-    [InlineData(90f, 180f, -90f)]
-    public void ToQuaternionAndBack_RoundTrip(float x, float y, float z)
-    {
-        // Euler angles in degrees
-        Vector3 euler = new(x, y, z);
-
-        Quaternion q1 = euler.ToQuaternion();
-        Quaternion q2 = q1.ToEulerAngles().ToQuaternion();
-
-        // They are equivalent if dot ≈ 1 or -1
-        float dot = Quaternion.Dot(q1, q2);
-        Assert.True(MathF.Abs(dot) > 1 - 1e-3f, $"Round-trip failed: dot={dot}");
-    }
-
-    [Fact]
-    public void IdentityQuaternion_ReturnsZeroEuler()
-    {
-        Quaternion q = Quaternion.Identity;
-        Vector3 euler = q.ToEulerAngles();
-
-        Assert.Equal(0f, euler.X, 3);
-        Assert.Equal(0f, euler.Y, 3);
-        Assert.Equal(0f, euler.Z, 3);
-    }
-
     public static TheoryData<Vector3, Vector3, Vector3, Vector3, Vector3, Vector3> FrameData => new()
     {
         {

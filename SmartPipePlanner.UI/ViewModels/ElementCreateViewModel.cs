@@ -37,7 +37,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
             OnPropertyChanged();
         }
     }
-    public BindableVector3 Orientation { get; set; } = new();
+    public BindableQuaternion Orientation { get; set; } = new();
     public BindableVector3 Location { get; set; } = new();
     public double Price
     {
@@ -85,7 +85,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
             Geometry = new Geometry
             {
                 Type = SelectedGeometry,
-                Orientation = Orientation.ToVector3()
+                Orientation = Orientation.ToQuaternion()
             },
             Location = Location.ToVector3(),
             Price = Price

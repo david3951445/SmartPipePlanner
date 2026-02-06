@@ -1,9 +1,9 @@
 ﻿using HelixToolkit.Geometry;
 using HelixToolkit.Wpf;
-using SmartPipePlanner.Core;
 using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Quaternion = System.Numerics.Quaternion;
 
 namespace SmartPipePlanner.UI;
 
@@ -24,13 +24,11 @@ public static class MeshFactory
         return AddMesh(meshBuilder, color);
     }
 
-    // Pipe1: start + orientation (Euler angles in degrees) + length
-    public static ModelVisual3D AddPipe(Vector3 start, Vector3 orientation, float length, Color color)
+    public static ModelVisual3D AddPipe(Vector3 start, Quaternion quaternion, float length, Color color)
     {
         var meshBuilder = new MeshBuilder();
 
-        var q = orientation.ToQuaternion();
-        var direction = Vector3.Transform(Vector3.UnitX, q); // 預設沿 X 軸
+        var direction = Vector3.Transform(Vector3.UnitX, quaternion); // 預設沿 X 軸
         start -= direction / 2;
         var end = start + direction * length;
 
@@ -38,16 +36,13 @@ public static class MeshFactory
         return AddMesh(meshBuilder, color);
     }
 
-    public static ModelVisual3D AddLPipe(Vector3 start, Vector3 orientation, float length, Color color)
+    public static ModelVisual3D AddLPipe(Vector3 start, Quaternion quaternion, float length, Color color)
     {
         var meshBuilder = new MeshBuilder();
 
-        // orientation 控制整個 L-Pipe 的旋轉
-        var q = orientation.ToQuaternion();
-
         // 預設 L-Pipe：第一段沿 X，第二段沿 Y
-        var firstDir = Vector3.Transform(Vector3.UnitX, q);
-        var secondDir = Vector3.Transform(Vector3.UnitY, q);
+        var firstDir = Vector3.Transform(Vector3.UnitX, quaternion);
+        var secondDir = Vector3.Transform(Vector3.UnitY, quaternion);
 
         var end1 = start + firstDir * length / 2;
         var end2 = start + secondDir * length / 2;

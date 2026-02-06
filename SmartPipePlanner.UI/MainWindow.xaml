@@ -39,11 +39,12 @@
                             <TextBox Width="50" Text="{Binding Location.Y, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Width="50" Text="{Binding Location.Z, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
-                        <TextBlock Text="Orientation"/>
+                        <TextBlock Text="Orientation (Ux, Uy, Uz, Theta(deg))"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox Width="50" Text="{Binding Orientation.X, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Width="50" Text="{Binding Orientation.Y, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Width="50" Text="{Binding Orientation.Z, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Ux, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Uy, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Uz, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Width="50" Text="{Binding Orientation.Theta, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
 
                         <TextBlock Text="Price"/>
