@@ -68,12 +68,14 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
     public ObservableCollection<Element> Elements { get; } = [];
     public ICommand AddElementCommand { get; }
     public ICommand RemoveElementCommand { get; }
+    public ICommand ClearElementsCommand { get; }
     public ICommand ApplyToSelectedCommand { get; }
 
     public ElementCreateViewModel()
     {
         AddElementCommand = new RelayCommand(AddElement);
         RemoveElementCommand = new RelayCommand(RemoveSelectedElement);
+        ClearElementsCommand = new RelayCommand(ClearElements);
         ApplyToSelectedCommand = new RelayCommand(ApplyToSelected);
     }
 
@@ -114,6 +116,12 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
                 SelectedElement = null; // 清空選擇
             }
         }
+    }
+
+    void ClearElements()
+    {
+        Elements.Clear();
+        SelectedElement = null;
     }
 
     void ApplyToSelected()
