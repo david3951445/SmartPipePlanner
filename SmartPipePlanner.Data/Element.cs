@@ -40,7 +40,7 @@ public enum ElementCategory
 
 public class Geometry
 {
-    public Vector3 Orientation { get; set; }
+    public Quaternion Orientation { get; set; }
     public GeometryType Type { get; set; }
 }
 

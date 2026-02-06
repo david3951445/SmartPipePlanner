@@ -37,7 +37,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
             OnPropertyChanged();
         }
     }
-    public BindableVector3 Orientation { get; set; } = new();
+    public BindableQuaternion Orientation { get; set; } = new();
     public BindableVector3 Location { get; set; } = new();
     public double Price
     {
@@ -85,7 +85,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
             Geometry = new Geometry
             {
                 Type = SelectedGeometry,
-                Orientation = Orientation.ToVector3()
+                Orientation = Orientation.ToQuaternion()
             },
             Location = Location.ToVector3(),
             Price = Price
@@ -168,7 +168,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
                     PipeGeometry.LPipe1 => GeometryType.LPipe1,
                     _ => throw new InvalidOperationException(),
                 },
-                Orientation = OrientationFromDirection(pipe.Direction, pipe.LPipeDirection)
+                Orientation = pipe.GetOrientation()
             },
             Location = new Vector3(pipe.Location.X, pipe.Location.Y, pipe.Location.Z),
             Price = 0 // Price can be set accordingly
@@ -176,22 +176,6 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
 
         foreach (var e in pipeElements)
             Elements.Add(e);
-
-        static Vector3 OrientationFromDirection(Direction d, Direction? ld)
-        {
-            var x = new Vector3(1, 0, 0);
-            var c1 = Coordinate.FromDirection(d);
-            var x_prime = new Vector3(c1.X, c1.Y, c1.Z);
-            var raw = x.AngleBetweenDegrees(x_prime);
-            if (ld == null)
-                return new(raw, 0, 0);
-
-            var y = new Vector3(0, 1, 0);
-            var c2 = Coordinate.FromDirection(ld.Value);
-            var y_prime = new Vector3(c2.X, c2.Y, c2.Z);
-            var pitch = y.AngleBetweenDegrees(y_prime);
-            return new(raw, pitch, 0);
-        }
     }
 
     void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

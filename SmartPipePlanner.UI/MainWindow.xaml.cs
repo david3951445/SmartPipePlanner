@@ -38,7 +38,6 @@ namespace SmartPipePlanner.UI
                     ClearViewportElements();
                 }
             };
-            _ = LoadAsync();
             planningViewModel = new PlanningViewModel(viewModel);
             planningPanel.DataContext = planningViewModel;
             planningViewModel.Problems.CollectionChanged += (s, e) =>
@@ -57,6 +56,11 @@ namespace SmartPipePlanner.UI
                 {
                     ClearViewportProblems();
                 }
+            };
+
+            Loaded += async (s, e) =>
+            {
+                await LoadAsync();
             };
         }
 

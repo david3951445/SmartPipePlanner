@@ -27,8 +27,8 @@ public class PlanningDbContext : DbContext
                 g.Property(geo => geo.Type).HasConversion<string>();
                 g.Property(geo => geo.Orientation)
                  .HasConversion(
-                    v => $"{v.X},{v.Y},{v.Z}",
-                    s => Vector3FromString(s));
+                    v => $"{v.X},{v.Y},{v.Z},{v.W}",
+                    s => QuaternionFromString(s));
             });
 
         modelBuilder.Entity<Element>()
@@ -76,6 +76,17 @@ public class PlanningDbContext : DbContext
             int.Parse(parts[0]),
             int.Parse(parts[1]),
             int.Parse(parts[2])
+        );
+    }
+
+    static Quaternion QuaternionFromString(string s)
+    {
+        var parts = s.Split(',');
+        return new Quaternion(
+            float.Parse(parts[0]),
+            float.Parse(parts[1]),
+            float.Parse(parts[2]),
+            float.Parse(parts[3])
         );
     }
 }
