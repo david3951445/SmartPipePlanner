@@ -68,7 +68,7 @@ public static class PipeExtensions
         {
             // pick a vector that is vertical to x2
             y2 = Vector3.UnitY;
-            if (Vector3.Dot(x2, y2) > 0.99f)
+            if (MathF.Abs(Vector3.Dot(x2, y2)) > 0.99f)
                 y2 = Vector3.UnitZ;
         }
         else
