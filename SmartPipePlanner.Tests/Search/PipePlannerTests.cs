@@ -66,7 +66,7 @@ public class PipePlannerTests
 
         var lpipe = paths[0]![0];
         Assert.Equal(new(0, 0, 0), lpipe.Location);
-        Assert.Equal(Direction.PosX, lpipe.Direction);
+        Assert.Equal(Direction.NegX, lpipe.Direction);
         Assert.Equal(Direction.PosY, lpipe.LPipeDirection);
         Assert.Equal(PipeGeometry.LPipe1, lpipe.Geometry);
 

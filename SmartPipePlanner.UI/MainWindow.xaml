@@ -76,6 +76,10 @@
                                 Content="Clear Elements"
                                 Command="{Binding ClearElementsCommand}"
                                 Margin="5"/>
+                            <Button Grid.Row="2" Grid.Column="0"
+                                Content="Clear Pipes"
+                                Command="{Binding ClearPipesCommand}"
+                                Margin="5"/>
                         </Grid>
 
                         <Separator Margin="0,10"/>

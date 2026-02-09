@@ -69,6 +69,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
     public ICommand AddElementCommand { get; }
     public ICommand RemoveElementCommand { get; }
     public ICommand ClearElementsCommand { get; }
+    public ICommand ClearPipesCommand { get; }
     public ICommand ApplyToSelectedCommand { get; }
 
     public ElementCreateViewModel()
@@ -76,6 +77,7 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
         AddElementCommand = new RelayCommand(AddElement);
         RemoveElementCommand = new RelayCommand(RemoveSelectedElement);
         ClearElementsCommand = new RelayCommand(ClearElements);
+        ClearPipesCommand = new RelayCommand(ClearPipes);
         ApplyToSelectedCommand = new RelayCommand(ApplyToSelected);
     }
 
@@ -103,18 +105,22 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
         {
             int index = Elements.IndexOf(SelectedElement);
             Elements.Remove(SelectedElement);
+            SelectNextOrLastElement(index);
+        }
+    }
 
-            // 選下一個元素（如果有）
-            if (Elements.Count > 0)
-            {
-                if (index >= Elements.Count)
-                    index = Elements.Count - 1; // 如果刪最後一個，選最後一個
-                SelectedElement = Elements[index];
-            }
-            else
-            {
-                SelectedElement = null; // 清空選擇
-            }
+    void SelectNextOrLastElement(int index)
+    {
+        // 選下一個元素（如果有）
+        if (Elements.Count > 0)
+        {
+            if (index >= Elements.Count)
+                index = Elements.Count - 1; // 如果刪最後一個，選最後一個
+            SelectedElement = Elements[index];
+        }
+        else
+        {
+            SelectedElement = null; // 清空選擇
         }
     }
 
@@ -122,6 +128,17 @@ class ElementCreateViewModel : INotifyPropertyChanged, IGridManager
     {
         Elements.Clear();
         SelectedElement = null;
+    }
+
+    void ClearPipes()
+    {
+        for (int i = Elements.Count - 1; i >= 0; i--)
+        {
+            var element = Elements[i];
+            if (element.Category == ElementCategory.HotWaterPipe || element.Category == ElementCategory.ColdWaterPipe)
+                Elements.RemoveAt(i);
+        }
+        SelectNextOrLastElement(0);
     }
 
     void ApplyToSelected()
